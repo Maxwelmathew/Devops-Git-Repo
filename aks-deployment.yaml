@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pet-clinic-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: petclinic-app
+  template:
+    metadata:
+      labels:
+        app: petclinic-app
+    spec:
+      containers:
+      - name: springboot-pet-clinic-app
+        image: projectdevacr.azurecr.io/projectdevacr:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8082
+# service type loadbalancer       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: petclinic-app
+    k8s-app: petclinic-app
+  name: petclinic-app
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 8082
+  type: LoadBalancer
+  selector:
+    app: petclinic-app
